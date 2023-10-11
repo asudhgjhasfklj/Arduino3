@@ -1,0 +1,36 @@
+아두이노 코드
+void setup() {
+  Serial.begin(9600);
+}
+double th(int v) { //온도를 바꿔줌
+  double t;
+  t = log(((10240000/v) - 10000));
+  t = 1 /(0.001129148 + (0.000234125*t) + (0.0000000876741*t*t*t));
+  t = t - 273.15; // 화씨를 섭씨로 바꾸어줌
+  return t;
+}
+void loop() {
+  int a = analogRead(A0); //A0으로부터 정보를 읽어옴
+  Serial.println(th(a)); //시리얼로 변환한 온도를 보내줌
+  delay(500); //0.5초에 한번
+}
+
+프로세싱 코드
+import processing.serial.*;
+Serial p;
+void setup(){
+  p = new Serial(this, "COM4", 9600);
+  size(400,200); //화면 사이
+}
+void draw(){
+  if(p.available()>0){ //시리얼로 정보를 읽어왔을 때
+    String m = p.readStringUntil('\n');
+    if(m!=null){ //m이 null이 아니면 정보를 출력해줌
+      println(m);
+      background(255,255,255);
+      textSize(128);
+      fill(0);
+      text(m, 65, 150);
+    }
+  }
+}
